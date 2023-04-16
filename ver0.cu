@@ -32,8 +32,8 @@ void printMat(int32_t *mat, int n)
 
 __global__ void matmul(int32_t *A, int32_t *B, int32_t *C, int n)
 {   
-    int i = blockIdx.y + blockDim.y + threadIdx.y;
-    int j = blockIdx.x + blockDim.x + threadIdx.x;
+    int i = blockIdx.x/(n/1024);
+    int j = blockIdx.x + (blockIdx.x%(n/1024))*1024;
     if (i<n && j<n)
     {
         for(int k=0;k<n;k++)
