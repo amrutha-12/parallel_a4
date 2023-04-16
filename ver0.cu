@@ -67,9 +67,9 @@ int validate(int32_t *A, int32_t *B, int32_t *C, int n)
 int main(int argc, char**argv)
 {
     int n = atoi(argv[1]);
-    int32_t* A = (int32_t*)malloc(n * sizeof(int32_t));
-    int32_t* B = (int32_t*)malloc(n * sizeof(int32_t));
-    int32_t* C = (int32_t*)malloc(n * sizeof(int32_t));
+    int32_t* A = (int32_t*)malloc(n * n * sizeof(int32_t));
+    int32_t* B = (int32_t*)malloc(n * n * sizeof(int32_t));
+    int32_t* C = (int32_t*)malloc(n * n * sizeof(int32_t));
     for(int i=0;i<n;i++)
     {
         for (int j=0;j<n;j++)
