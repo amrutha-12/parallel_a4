@@ -35,13 +35,10 @@ __global__ void matmul(int32_t *A, int32_t *B, int32_t *C, int n)
     int ind = (blockIdx.x * 1024) + threadIdx.x;
     int i = blockIdx.x/(n/1024);
     int j = threadIdx.x + (blockIdx.x%(n/1024))*1024;
-    if (i<n && j<n)
-    {
-        for(int k=0;k<n;k++)
-            {
-                C[ind] += (A[i*n+k]*B[k*n+j]);
-            }
-    }
+    for(int k=0;k<n;k++)
+        {
+            C[ind] += (A[i*n+k]*B[k*n+j]);
+        }
 }
 
 // int validate(int32_t *A, int32_t *B, int32_t *C, int n)
@@ -109,9 +106,9 @@ int main(int argc, char**argv)
 
     //Allocating memory space on the device
     int32_t *d_A, *d_B, *d_C;
-    cudaMalloc((void **) &d_A, sizeof(int32_t)*n*n);
-    cudaMalloc((void **) &d_B, sizeof(int32_t)*n*n);
-    cudaMalloc((void **) &d_C, sizeof(int32_t)*n*n);
+    cudaMalloc(&d_A, sizeof(int32_t)*n*n);
+    cudaMalloc(&d_B, sizeof(int32_t)*n*n);
+    cudaMalloc(&d_C, sizeof(int32_t)*n*n);
 
     // Recording time taken to transfer data from host to device
     cudaEventRecord(start,0);
