@@ -35,9 +35,9 @@ void printMat(int32_t *mat, int n)
 
 __global__ void matmul(int32_t *A, int32_t *B, int32_t *C, int n)
 {
-    int index = (blockIdx.x * min(n,1024)) + threadIdx.x;
-    int i = blockIdx.x/(n/min(n,1024));
-    int j = threadIdx.x + (blockIdx.x%(n/min(n,1024)))*min(n,1024);
+    int index = blockIdx.x * blockDim.x + threadIdx.x;
+    int i = index / n;
+    int j = index % n;
     int32_t sum = 0;
     for(int k=0;k<n;k++)
     {
@@ -161,9 +161,9 @@ int main(int argc, char**argv)
         cout<<cudaGetErrorString(err)<<endl;
         exit(1);
     }
-    dim3 threadsPerBlock(min(n, 1024));
-    dim3 numBlocks(n*n/min(n, 1024));
-    matmul<<<numBlocks,threadsPerBlock>>>(d_A,d_B,d_C,n);
+    int blockSize = min(n,1024);
+    int numBlocks = (n*n + blockSize - 1) / blockSize;
+    matmul<<<numBlocks, blockSize>>>(d_A, d_B, d_C, n);
     err = cudaEventRecord(stop,0);
     if(err != cudaSuccess) {
         cout<<cudaGetErrorString(err)<<endl;
@@ -196,6 +196,11 @@ int main(int argc, char**argv)
         cout<<cudaGetErrorString(err)<<endl;
         exit(1);
     }
+    err = cudaEventSynchronize(stop);
+    if(err != cudaSuccess) {
+        cout<<cudaGetErrorString(err)<<endl;
+        exit(1);
+    }
     err = cudaEventElapsedTime(&data_transfer_time2, start, stop);
     if(err != cudaSuccess) {
         cout<<cudaGetErrorString(err)<<endl;
@@ -214,6 +219,12 @@ int main(int argc, char**argv)
 
     printf("Time taken to transfer data: %f\n", data_transfer_time1+data_transfer_time2);
     printf("Time taken to perform the computation: %f\n",computation_time);
+    // printMat(A,n);
+    // printMat(d_A,n);
+    // printMat(B,n);
+    // printMat(d_B,n);
+    // printMat(C,n);
+    // printMat(d_C,n);
     free(A);
     free(B);
     free(C);
