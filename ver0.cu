@@ -44,25 +44,45 @@ __global__ void matmul(int32_t *A, int32_t *B, int32_t *C, int n)
     }
 }
 
-int validate(int32_t *A, int32_t *B, int32_t *C, int n)
+// int validate(int32_t *A, int32_t *B, int32_t *C, int n)
+// {
+//     int errors = 0;
+//     for (int i=0;i<n;i++)
+//     {
+//         for (int j=0;j<n;j++)
+//         {
+//             int32_t C_check = 0;
+//             for (int k=0;k<n;k++)
+//             {
+//                 C_check+=A[i*n+k]*B[k*n+j];
+//             }
+//             if(C_check!=C[i*n+j])
+//             {
+//                 errors+=1;
+//             }
+//         }
+//     }
+//     return errors;
+// }
+
+void validate(int32_t *A,int32_t *B,int32_t *C,int n)
 {
-    int errors = 0;
-    for (int i=0;i<n;i++)
+    int mistakes=0;
+    //Serial Matmul
+    for(int i=0;i<n;i++)
     {
-        for (int j=0;j<n;j++)
+        for(int j=0;j<n;j++)
         {
-            int32_t C_check = 0;
-            for (int k=0;k<n;k++)
+            int32_t temp = 0;
+            for(int k=0;k<n;k++)
             {
-                C_check+=A[i*n+k]*B[k*n+j];
+                temp+=A[i*n+k]*B[k*n+j];
             }
-            if(C_check!=C[i*n+j])
-            {
-                errors+=1;
-            }
+            if(temp != C[i*n+j])
+                mistakes++;
         }
     }
-    return errors;
+    printf("#Mistakes: %d\n",mistakes);
 }
 
 int main(int argc, char**argv)
@@ -119,16 +139,20 @@ int main(int argc, char**argv)
     cudaEventRecord(stop,0);
     cudaEventElapsedTime(&data_transfer_time2, start, stop);
 
-    int mistakes = validate(A,B,C,n);
-    if(mistakes!=0)
-    {
-        printf("Matrix multiplication was not correct, %d mistakes were reported\n", mistakes);
-    }
-    else
-    {
-        printf("Matrix multiplication was successfull!\n");
-    }
+    // int mistakes = validate(A,B,C,n);
+    // if(mistakes!=0)
+    // {
+    //     printf("Matrix multiplication was not correct, %d mistakes were reported\n", mistakes);
+    // }
+    // else
+    // {
+    //     printf("Matrix multiplication was successfull!\n");
+    // }
 
+    if(true)
+    {
+        validate(A,B,C,n);
+    }
 
     printf("Time taken to transfer data: %f\n", data_transfer_time1+data_transfer_time2);
     printf("Time taken to perform the computation: %f\n",computation_time);
