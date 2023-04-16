@@ -32,13 +32,14 @@ void printMat(int32_t *mat, int n)
 
 __global__ void matmul(int32_t *A, int32_t *B, int32_t *C, int n)
 {   
+    int ind = (blockIdx.x * 1024) + threadIdx.x;
     int i = blockIdx.x/(n/1024);
     int j = blockIdx.x + (blockIdx.x%(n/1024))*1024;
     if (i<n && j<n)
     {
         for(int k=0;k<n;k++)
             {
-                C[i*n+j] += (A[i*n+k]*B[k*n+j]);
+                C[ind] += (A[i*n+k]*B[k*n+j]);
             }
     }
 }
